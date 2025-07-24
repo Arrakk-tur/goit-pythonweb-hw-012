@@ -10,5 +10,12 @@ cloudinary.config(
 )
 
 async def upload_avatar(file_path: str, public_id: str) -> str:
+    """
+    Upload an avatar image to Cloudinary.
+
+    :param file_path: Local file path of the image.
+    :param public_id: Public ID for storing the image in Cloudinary.
+    :return: Secure URL of the uploaded image.
+    """
     result = cloudinary.uploader.upload(file_path, public_id=public_id, overwrite=True)
     return result.get("secure_url")
