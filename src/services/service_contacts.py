@@ -20,8 +20,8 @@ class ContactService:
         Args:
             body: Data for creating the contact.
             user: The authenticated user.
-            Returns:
-    The newly created contact.
+        Returns:
+            The newly created contact.
         """
         return await self.repo.create(body, user)
 

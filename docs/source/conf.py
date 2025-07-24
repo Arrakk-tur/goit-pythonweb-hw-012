@@ -9,7 +9,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 
-# autosummary_generate = True
+autosummary_generate = True
 
 
 project = 'goit-pythonweb-hw-12'
