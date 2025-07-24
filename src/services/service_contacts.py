@@ -8,7 +8,8 @@ class ContactService:
         """
         Initialize the ContactService with a database session.
 
-        :param db: Asynchronous database session.
+        Args:
+            db: Asynchronous database session.
         """
         self.repo = ContactRepository(db)
 
@@ -16,9 +17,11 @@ class ContactService:
         """
         Create a new contact for the authenticated user.
 
-        :param body: Data for creating the contact.
-        :param user: The authenticated user.
-        :return: The newly created contact.
+        Args:
+            body: Data for creating the contact.
+            user: The authenticated user.
+            Returns:
+    The newly created contact.
         """
         return await self.repo.create(body, user)
 
@@ -26,10 +29,13 @@ class ContactService:
         """
         Retrieve all contacts belonging to the authenticated user.
 
-        :param user: The authenticated user.
-        :param skip: Number of records to skip.
-        :param limit: Maximum number of records to return.
-        :return: A list of contacts.
+        Args:
+            user: The authenticated user.
+            skip: Number of records to skip.
+            limit: Maximum number of records to return.
+
+        Returns:
+            A list of contacts.
         """
         return await self.repo.get_all(user, skip, limit)
 
@@ -37,9 +43,12 @@ class ContactService:
         """
         Retrieve a specific contact by ID for the authenticated user.
 
-        :param contact_id: The ID of the contact.
-        :param user: The authenticated user.
-        :return: Contact object if found, else None.
+        Args:
+            contact_id: The ID of the contact.
+            user: The authenticated user.
+
+        Returns:
+            Contact object if found, else None.
         """
         return await self.repo.get_by_id(contact_id, user)
 
@@ -47,10 +56,13 @@ class ContactService:
         """
         Update an existing contact by ID.
 
-        :param contact_id: The ID of the contact to update.
-        :param body: New data for the contact.
-        :param user: The authenticated user.
-        :return: The updated contact or None if not found.
+        Args:
+            contact_id: The ID of the contact to update.
+            body: New data for the contact.
+            user: The authenticated user.
+
+        Returns:
+            The updated contact or None if not found.
         """
         return await self.repo.update(contact_id, body, user)
 
@@ -58,9 +70,12 @@ class ContactService:
         """
         Delete a contact by ID.
 
-        :param contact_id: The ID of the contact to delete.
-        :param user: The authenticated user.
-        :return: The deleted contact or None if not found.
+        Args:
+            contact_id: The ID of the contact to delete.
+            user: The authenticated user.
+
+        Returns:
+            The deleted contact or None if not found.
         """
         return await self.repo.delete(contact_id, user)
 
@@ -68,9 +83,12 @@ class ContactService:
         """
         Search contacts by first name, last name or email.
 
-        :param user: The authenticated user.
-        :param query: Search query string.
-        :return: A list of matching contacts.
+        Args:
+            user: The authenticated user.
+            query: Search query string.
+
+        Returns:
+            A list of matching contacts.
         """
         return await self.repo.search(user, query)
 
@@ -78,7 +96,10 @@ class ContactService:
         """
         Retrieve contacts whose birthdays are in the next 7 days.
 
-        :param user: The authenticated user.
-        :return: A list of contacts with upcoming birthdays.
+        Args:
+            user: The authenticated user.
+
+        Returns:
+            A list of contacts with upcoming birthdays.
         """
         return await self.repo.upcoming_birthdays(user)
