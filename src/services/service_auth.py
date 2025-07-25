@@ -12,7 +12,6 @@ from src.repository.repo_users import UserRepository
 from src.db.db import get_db
 from src.db.models import User
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 async def register_user(user: UserCreate, repo: UserRepository) -> User:
@@ -23,7 +22,8 @@ async def register_user(user: UserCreate, repo: UserRepository) -> User:
     :param repo: UserRepository instance.
     :return: The created user.
     """
-    hashed_password = pwd_context.hash(user.password)
+    hashed_password = hash_password(user.password)
+    # hashed_password = pwd_context.hash(user.password)
     return await repo.create_user(user.email, hashed_password)
 
 
@@ -69,3 +69,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
     if user is None:
         raise credentials_exception
     return user
+
+def hash_password(password: str) -> str:
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    return pwd_context.hash(password)
