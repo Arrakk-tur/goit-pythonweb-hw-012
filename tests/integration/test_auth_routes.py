@@ -1,6 +1,6 @@
 import pytest
-from httpx import AsyncClient
 from sqlalchemy import select
+from fastapi import status
 
 from src.db.models import User
 from tests.conftest import TestingSessionLocal
@@ -15,7 +15,7 @@ def test_register_user(client):
         "email": current_test_user["email"],
         "password": current_test_user["password"]
     })
-    assert response.status_code == 201
+    assert response.status_code == status.HTTP_201_CREATED
     assert response.json()["email"] == current_test_user["email"]
 
 @pytest.mark.asyncio
@@ -29,7 +29,28 @@ async def test_login(client):
 
     response = client.post("api/auth/login",
                            data={"username": tester_user_static["email"], "password": tester_user_static["password"]})
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
     assert "access_token" in data
     assert "token_type" in data
+
+
+def test_repeat_signup(client):
+    response = client.post("/api/auth/signup", json={
+        "email": current_test_user["email"],
+        "password": current_test_user["password"]
+    })
+    assert response.status_code == status.HTTP_409_CONFLICT
+
+
+@pytest.mark.parametrize("email,password,status_code", [
+    ("tester_user_999@example.com", "wrongpass", status.HTTP_401_UNAUTHORIZED),  # wrong password
+    ("wrong_user@example.com", "testpass123", status.HTTP_401_UNAUTHORIZED),     # wrong username/email
+    ("", "", status.HTTP_401_UNAUTHORIZED),                               # validation error
+])
+def test_login_failures(client, email, password, status_code):
+    response = client.post("/api/auth/login", data={
+        "username": email,
+        "password": password
+    }, headers={"Content-Type": "application/x-www-form-urlencoded"})
+    assert response.status_code == status_code
