@@ -5,7 +5,7 @@ load_dotenv()
 
 class Config:
 
-# DB
+    # DB
     DB_HOST = os.getenv("DB_HOST")
     DB_PORT = os.getenv("DB_PORT")
     DB_NAME = os.getenv("DB_NAME")
@@ -16,19 +16,23 @@ class Config:
         f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
-# alembic
+    # alembic
     SYNC_DB_URL = (
         f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
-# JWT
+    # JWT
     JWT_SECRET = os.getenv("JWT_SECRET")
     JWT_ALGORITHM = "HS256"
     JWT_EXPIRATION_SECONDS = 3600
 
-# CLOUDINARY
+    # CLOUDINARY
     CLOUDINARY_CLOUD_NAME=os.getenv("CLOUDINARY_CLOUD_NAME")
     CLOUDINARY_API_KEY=os.getenv("CLOUDINARY_API_KEY")
     CLOUDINARY_API_SECRET=os.getenv("CLOUDINARY_API_SECRET")
+
+    # REDIS
+    redis_host: str = "localhost"
+    redis_port: int = 6379
 
 config = Config()

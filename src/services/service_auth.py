@@ -1,3 +1,5 @@
+import json
+
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from fastapi import HTTPException, status, Depends
@@ -11,6 +13,7 @@ from src.schemas import UserCreate
 from src.repository.repo_users import UserRepository
 from src.db.db import get_db
 from src.db.models import User, UserRole
+from src.services.service_cache import redis_client
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -64,12 +67,31 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
+        # Спроба дістати з Redis
+        cached_user = await redis_client.get(f"user:{email}")
+        if cached_user:
+            user_data = json.loads(cached_user)
+            return User(**user_data)
+
+        user = await UserRepository(db).get_by_email(email)
+        if user is None:
+            raise credentials_exception
+
+        user_dict = {
+            "id": user.id,
+            "email": user.email,
+            "hashed_password": user.hashed_password,
+            "avatar_url": user.avatar_url,
+            "role": user.role.value,
+            "is_active": user.is_active,
+            "is_verified": user.is_verified,
+        }
+
+        await redis_client.set(f"user:{email}", json.dumps(user_dict), ex=600)
+
+        return user
     except JWTError:
         raise credentials_exception
-    user = await UserRepository(db).get_by_email(email)
-    if user is None:
-        raise credentials_exception
-    return user
 
 def hash_password(password: str) -> str:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -77,7 +99,13 @@ def hash_password(password: str) -> str:
 
 
 def ensure_is_admin(user: User):
-    if user.role != UserRole.admin:
+    """
+    Ensure User is Admin.
+
+    :param user: User data.
+    """
+
+    if user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"
