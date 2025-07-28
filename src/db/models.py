@@ -1,6 +1,6 @@
 import enum
-from datetime import date
-from sqlalchemy import String, Integer, Date, Text, Boolean, ForeignKey, Enum
+from datetime import date, datetime
+from sqlalchemy import String, Integer, Date, Text, Boolean, ForeignKey, Enum, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from typing import List, Optional
 
@@ -42,3 +42,12 @@ class Contact(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="contacts")
+
+
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    email: Mapped[str] = mapped_column(String, index=True)
+    token: Mapped[str] = mapped_column(String, unique=True, index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime)

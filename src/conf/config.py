@@ -35,4 +35,12 @@ class Config:
     redis_host: str = "localhost"
     redis_port: int = 6379
 
+    # SMTP
+
+    SMTP_HOST=os.getenv("SMTP_HOST")
+    SMTP_PORT=os.getenv("SMTP_PORT")
+    SMTP_USER=os.getenv("SMTP_USER")
+    SMTP_PASSWORD=os.getenv("SMTP_PASSWORD")
+    FRONTEND_URL=os.getenv("FRONTEND_URL")
+
 config = Config()
