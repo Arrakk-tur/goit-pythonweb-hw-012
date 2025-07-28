@@ -1,4 +1,3 @@
-from random import randint
 import asyncio
 
 import pytest
@@ -31,9 +30,9 @@ TestingSessionLocal = async_sessionmaker(
 )
 
 # Тестовий користувач
-rand_num = randint(100, 1000)
-test_user = {
-    "email": f"tester_user_{rand_num}@example.com",
+tester_user_static = {
+    "email": f"tester_user_static@example.com",
+    "password": "testpass123",
     "hashed_password": hash_password("testpass123"),
 }
 
@@ -47,8 +46,8 @@ def init_models_wrap():
 
         async with TestingSessionLocal() as session:
             user = User(
-                email=test_user["email"],
-                hashed_password=test_user["hashed_password"],
+                email=tester_user_static["email"],
+                hashed_password=tester_user_static["hashed_password"],
             )
             session.add(user)
             await session.commit()
@@ -68,5 +67,5 @@ def client():
 # Отримання токена для авторизованих запитів
 @pytest_asyncio.fixture()
 async def auth_headers():
-    token = await create_access_token(data={"sub": test_user["username"]})
+    token = await create_access_token(data={"sub": tester_user_static["email"]})
     return {"Authorization": f"Bearer {token}"}

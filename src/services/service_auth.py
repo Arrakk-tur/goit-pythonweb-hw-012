@@ -12,6 +12,7 @@ from src.repository.repo_users import UserRepository
 from src.db.db import get_db
 from src.db.models import User
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 async def register_user(user: UserCreate, repo: UserRepository) -> User:
