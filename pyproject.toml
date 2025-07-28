@@ -27,6 +27,7 @@ dependencies = [
 
 [tool.poetry.dependencies]
 alembic = "^1.13.1"
+redis.asyncio = "^5.0.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

@@ -9,7 +9,7 @@ from src.db.db import get_db
 from src.db.models import User
 from src.repository.repo_users import UserRepository
 from src.schemas import UserResponse
-from src.services.service_auth import get_current_user
+from src.services.service_auth import get_current_user, ensure_is_admin
 
 router = APIRouter(prefix="/user", tags=["user"])
 limiter = Limiter(key_func=get_remote_address)
@@ -25,6 +25,7 @@ async def upload_avatar_route(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
+    ensure_is_admin(current_user)
     temp_dir = "temp"
     os.makedirs(temp_dir, exist_ok=True)
 

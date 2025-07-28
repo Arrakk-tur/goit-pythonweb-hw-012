@@ -1,10 +1,15 @@
+import enum
 from datetime import date
-from sqlalchemy import String, Integer, Date, Text, Boolean, ForeignKey
+from sqlalchemy import String, Integer, Date, Text, Boolean, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from typing import List, Optional
 
 class Base(DeclarativeBase):
     pass
+
+class UserRole(str, enum.Enum):
+    USER = "user"
+    ADMIN = "admin"
 
 class User(Base):
     __tablename__ = "users"
@@ -15,6 +20,12 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     avatar_url: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    role: Mapped[UserRole] = mapped_column(
+        Enum(UserRole, name="user_role", create_type=False),
+        nullable=False,
+        default=UserRole.USER,
+        server_default=UserRole.USER.value,
+    )
 
     contacts: Mapped[List["Contact"]] = relationship(back_populates="user")
 

@@ -1,6 +1,8 @@
 from datetime import date
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
+from enum import Enum
+
 
 # Contacts
 class ContactBase(BaseModel):
@@ -30,10 +32,15 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
+class RoleEnum(str, Enum):
+    user = "user"
+    admin = "admin"
+
 class UserResponse(UserBase):
     id: int
     is_active: bool
     is_verified: bool
+    role: RoleEnum
     avatar_url: Optional[str] = None
 
     class Config:

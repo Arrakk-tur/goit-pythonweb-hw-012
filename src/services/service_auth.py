@@ -10,7 +10,7 @@ from src.conf.config import config
 from src.schemas import UserCreate
 from src.repository.repo_users import UserRepository
 from src.db.db import get_db
-from src.db.models import User
+from src.db.models import User, UserRole
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -74,3 +74,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
 def hash_password(password: str) -> str:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     return pwd_context.hash(password)
+
+
+def ensure_is_admin(user: User):
+    if user.role != UserRole.admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
